@@ -11,3 +11,4 @@ appsettings.Development.json
 Thumbs.db
 .DS_Store
 *.log
+*.csproj
