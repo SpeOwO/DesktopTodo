@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using DesktopTodoCalendar.Models;
+using DesktopTodo.Models;
 
-namespace DesktopTodoCalendar.Services
+namespace DesktopTodo.Services
 {
     public class TodoManager
     {

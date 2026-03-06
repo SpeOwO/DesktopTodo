@@ -1,0 +1,4 @@
+C:\repo\DesktopTodo\obj\Debug\net10.0-windows\MainWindow.g.cs
+C:\repo\DesktopTodo\obj\Debug\net10.0-windows\DesktopTodo_MarkupCompile.cache
+C:\repo\DesktopTodo\obj\Debug\net10.0-windows\DesktopTodo_MarkupCompile.lref
+C:\repo\DesktopTodo\obj\Debug\net10.0-windows\App.g.cs

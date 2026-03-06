@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DesktopTodoCalendar.Models
+namespace DesktopTodo.Models
 {
     // 1. 상태 및 공통 열거형 (Enums)
     public enum TodoState

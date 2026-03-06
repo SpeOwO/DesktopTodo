@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\repo\\DesktopTodo\\DesktopTodo\\DesktopTodo.csproj",
+      "projectUniqueName": "C:\\repo\\DesktopTodo\\DesktopTodo.csproj",
       "projectName": "DesktopTodo",
-      "projectPath": "C:\\repo\\DesktopTodo\\DesktopTodo\\DesktopTodo.csproj",
+      "projectPath": "C:\\repo\\DesktopTodo\\DesktopTodo.csproj",
       "packagesPath": "C:\\Users\\Echo\\.nuget\\packages\\",
-      "outputPath": "C:\\repo\\DesktopTodo\\DesktopTodo\\obj\\",
+      "outputPath": "C:\\repo\\DesktopTodo\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Echo\\AppData\\Roaming\\NuGet\\NuGet.Config"

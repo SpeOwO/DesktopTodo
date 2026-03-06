@@ -2,10 +2,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using DesktopTodoCalendar.Models;
-using DesktopTodoCalendar.Services;
+using DesktopTodo.Models;
+using DesktopTodo.Services;
 
-namespace DesktopTodoCalendar.ViewModels
+namespace DesktopTodo.ViewModels
 {
     // INotifyPropertyChanged: 데이터가 바뀌면 화면(UI)도 자동으로 바뀌게(새로고침) 해주는 마법의 인터페이스입니다.
     public class MainViewModel : INotifyPropertyChanged
