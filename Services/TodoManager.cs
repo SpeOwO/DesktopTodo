@@ -45,25 +45,31 @@ namespace DesktopTodo.Services
                 string jsonString = File.ReadAllText(dataFilePath);
                 var element = JsonSerializer.Deserialize<JsonElement>(jsonString);
                 
-                // 실제 개발 시에는 Json 타입 변환을 더 엄격하게 처리합니다.
-                // 여기서는 구조를 보여주기 위해 간략화했습니다.
-                Tasks = JsonSerializer.Deserialize<List<SingleTask>>(element.GetProperty("Tasks").GetRawText()) ?? new List<SingleTask>();
-                Projects = JsonSerializer.Deserialize<List<ProjectTask>>(element.GetProperty("Projects").GetRawText()) ?? new List<ProjectTask>();
-                Routines = JsonSerializer.Deserialize<List<RoutineDefinition>>(element.GetProperty("Routines").GetRawText()) ?? new List<RoutineDefinition>();
-                Settings = JsonSerializer.Deserialize<AppSettings>(element.GetProperty("Settings").GetRawText()) ?? new AppSettings();
+                // 경고 방지 및 안전한 데이터 파싱을 위해 TryGetProperty 사용
+                if (element.TryGetProperty("Tasks", out var tasksProp))
+                    Tasks = JsonSerializer.Deserialize<List<SingleTask>>(tasksProp.GetRawText()) ?? new List<SingleTask>();
+                    
+                if (element.TryGetProperty("Projects", out var projectsProp))
+                    Projects = JsonSerializer.Deserialize<List<ProjectTask>>(projectsProp.GetRawText()) ?? new List<ProjectTask>();
+                    
+                if (element.TryGetProperty("Routines", out var routinesProp))
+                    Routines = JsonSerializer.Deserialize<List<RoutineDefinition>>(routinesProp.GetRawText()) ?? new List<RoutineDefinition>();
+                    
+                if (element.TryGetProperty("Settings", out var settingsProp))
+                    Settings = JsonSerializer.Deserialize<AppSettings>(settingsProp.GetRawText()) ?? new AppSettings();
             }
         }
 
-        // 2. 특정 날짜의 업무 가져오기 (핵심 로직)
+        // 2. 특정 날짜의 업무 가져오기
         public List<TodoItemBase> GetTodosForDate(DateTime date)
         {
             var targetDate = date.Date;
             var result = new List<TodoItemBase>();
 
-            // A. 루틴 확인 및 자동 생성 (해당 날짜에 루틴 업무가 아직 안 만들어졌다면 생성)
+            // A. 루틴 확인 및 자동 생성
             GenerateRoutineTasksForDate(targetDate);
 
-            // B. 해당 날짜의 단발성 업무(Task) 및 생성된 루틴 업무 추가
+            // B. 해당 날짜의 단발성 업무 추가
             result.AddRange(Tasks.Where(t => t.TargetDate.Date == targetDate));
 
             // C. 이월(Rollover)된 과거 업무 가져오기
@@ -81,13 +87,12 @@ namespace DesktopTodo.Services
 
             foreach (var project in activeProjects)
             {
-                // Q2 옵션: 미래 날짜 숨김 처리 로직
                 if (Settings.HideFutureCompletedProjects && 
                     project.State == TodoState.Completed && 
                     project.CompletedDate.HasValue && 
                     targetDate > project.CompletedDate.Value.Date)
                 {
-                    continue; // 완료일 다음날부터는 캘린더에 포함시키지 않음 (숨김)
+                    continue; // 숨김 처리
                 }
                 result.Add(project);
             }
@@ -95,18 +100,16 @@ namespace DesktopTodo.Services
             return result;
         }
 
-        // 3. 루틴 생성기 (공장 역할)
+        // 3. 루틴 생성기
         private void GenerateRoutineTasksForDate(DateTime date)
         {
             foreach (var routine in Routines)
             {
-                // 이미 이 루틴으로 생성된 오늘자 업무가 있는지 확인
                 bool alreadyExists = Tasks.Any(t => t.ParentRoutineId == routine.Id && t.TargetDate.Date == date.Date);
                 if (alreadyExists) continue;
 
                 bool shouldGenerate = false;
 
-                // 루틴 조건 검사
                 switch (routine.Type)
                 {
                     case RoutineType.Daily:
@@ -128,7 +131,6 @@ namespace DesktopTodo.Services
                         break;
                 }
 
-                // 조건에 맞으면 새로운 SingleTask 인스턴스 생성
                 if (shouldGenerate)
                 {
                     var newTask = new SingleTask

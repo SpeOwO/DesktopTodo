@@ -1,28 +1,84 @@
+using System;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using DesktopTodoCalendar.ViewModels;
+using DesktopTodo.ViewModels;
 
-namespace DesktopTodoCalendar.Views
+namespace DesktopTodo.Views
 {
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            
-            // XAML에서 바인딩할 DataContext를 코드에서도 설정할 수 있습니다.
-            // 여기서는 뷰모델을 생성해서 연결해줍니다.
             this.DataContext = new MainViewModel();
         }
 
-        // 위젯 특성상 상단 타이틀바(Title bar)가 없기 때문에,
-        // 창의 아무 곳이나 잡고 드래그해서 위치를 옮길 수 있도록 해주는 필수 이벤트입니다.
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
                 this.DragMove();
             }
+        }
+
+        private void Prev_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is MainViewModel vm)
+            {
+                vm.GoToPrevious();
+            }
+        }
+
+        private void Next_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is MainViewModel vm)
+            {
+                vm.GoToNext();
+            }
+        }
+
+        private void ToggleView_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is MainViewModel vm)
+            {
+                if (vm.ViewMode == CalendarViewMode.Monthly)
+                {
+                    vm.ViewMode = CalendarViewMode.Weekly;
+                    this.Height = 350;
+                }
+                else
+                {
+                    vm.ViewMode = CalendarViewMode.Monthly;
+                    this.Height = 800;
+                }
+            }
+        }
+
+        // --- 창 크기 조절 이벤트 ---
+
+        // 우측 가장자리 드래그
+        private void ResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            double newWidth = this.Width + e.HorizontalChange;
+            if (newWidth >= this.MinWidth) this.Width = newWidth;
+        }
+
+        // 아래쪽 가장자리 드래그
+        private void ResizeBottom_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            double newHeight = this.Height + e.VerticalChange;
+            if (newHeight >= this.MinHeight) this.Height = newHeight;
+        }
+
+        // 우측 하단 모서리 드래그
+        private void ResizeCorner_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            double newWidth = this.Width + e.HorizontalChange;
+            double newHeight = this.Height + e.VerticalChange;
+
+            if (newWidth >= this.MinWidth) this.Width = newWidth;
+            if (newHeight >= this.MinHeight) this.Height = newHeight;
         }
     }
 }

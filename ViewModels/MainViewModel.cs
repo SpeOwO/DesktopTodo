@@ -1,60 +1,167 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using DesktopTodo.Models;
 using DesktopTodo.Services;
 
 namespace DesktopTodo.ViewModels
 {
-    // INotifyPropertyChanged: 데이터가 바뀌면 화면(UI)도 자동으로 바뀌게(새로고침) 해주는 마법의 인터페이스입니다.
+    public class CalendarDay
+    {
+        public DateTime Date { get; set; }
+        public string DayNumber => Date.Day.ToString();
+        public string DayColor => !IsCurrentMonth ? "#888888" : (Date.DayOfWeek == DayOfWeek.Sunday ? "#FF6B6B" : (Date.DayOfWeek == DayOfWeek.Saturday ? "#4DABF7" : "White"));
+        public bool IsCurrentMonth { get; set; }
+        public ObservableCollection<TodoItemBase> Todos { get; set; } = new ObservableCollection<TodoItemBase>();
+    }
+
+    public enum CalendarViewMode
+    {
+        Monthly,
+        Weekly
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly TodoManager _todoManager;
-        private DateTime _selectedDate;
+        private DateTime _currentDate;
+        private CalendarViewMode _viewMode;
+        
+        // 크기 조절 허용 여부 상태 (기본값: false - 크기 고정됨)
+        private bool _isSizeUnlocked = false;
 
-        // 화면의 리스트뷰(ListView)와 직접 연결될 투두 리스트
-        // ObservableCollection을 쓰면 리스트에 항목이 추가/삭제될 때 화면이 즉시 업데이트됩니다.
-        public ObservableCollection<TodoItemBase> CurrentTodos { get; set; }
+        public ObservableCollection<CalendarDay> CalendarDays { get; set; }
 
-        // 사용자가 달력에서 선택한 날짜
-        public DateTime SelectedDate
+        public bool IsSizeUnlocked
         {
-            get => _selectedDate;
+            get => _isSizeUnlocked;
             set
             {
-                _selectedDate = value;
-                OnPropertyChanged(); // 화면에 "날짜 바뀌었어!"라고 알려줌
-                RefreshTodos();      // 날짜가 바뀌었으니 해당 날짜의 투두 목록을 다시 불러옴
+                _isSizeUnlocked = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CalendarViewMode ViewMode
+        {
+            get => _viewMode;
+            set
+            {
+                _viewMode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayDateText));
+                GenerateCalendar(); 
+            }
+        }
+
+        public DateTime CurrentDate
+        {
+            get => _currentDate;
+            set
+            {
+                _currentDate = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayDateText));
+                GenerateCalendar(); 
+            }
+        }
+
+        public string DisplayDateText
+        {
+            get
+            {
+                if (ViewMode == CalendarViewMode.Monthly)
+                {
+                    return CurrentDate.ToString("yyyy년 MM월");
+                }
+                else
+                {
+                    Calendar cal = CultureInfo.CurrentCulture.Calendar;
+                    DateTime firstDayOfMonth = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+                    
+                    int currentWeek = cal.GetWeekOfYear(CurrentDate, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+                    int firstWeek = cal.GetWeekOfYear(firstDayOfMonth, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+                    
+                    int weekOfMonth = currentWeek - firstWeek + 1;
+                    
+                    return $"{CurrentDate.ToString("yyyy년 MM월")} {weekOfMonth}주차";
+                }
             }
         }
 
         public MainViewModel()
         {
             _todoManager = new TodoManager();
-            CurrentTodos = new ObservableCollection<TodoItemBase>();
-            
-            // 앱을 처음 켜면 기본적으로 '오늘' 날짜를 선택하도록 설정
-            SelectedDate = DateTime.Today; 
+            CalendarDays = new ObservableCollection<CalendarDay>();
+            _currentDate = DateTime.Today;
+            _viewMode = CalendarViewMode.Monthly;
+            GenerateCalendar();
         }
 
-        // 선택된 날짜에 맞춰 투두 리스트를 새로고침하는 메서드
-        public void RefreshTodos()
+        public void GoToPrevious()
         {
-            CurrentTodos.Clear();
-            
-            // TodoManager에서 앞서 만든 멋진 로직(루틴 생성, 이월, Project 숨김 등)을 거친 데이터들을 가져옵니다.
-            var todos = _todoManager.GetTodosForDate(SelectedDate);
-            
-            foreach (var todo in todos)
+            CurrentDate = ViewMode == CalendarViewMode.Monthly ? CurrentDate.AddMonths(-1) : CurrentDate.AddDays(-7);
+        }
+
+        public void GoToNext()
+        {
+            CurrentDate = ViewMode == CalendarViewMode.Monthly ? CurrentDate.AddMonths(1) : CurrentDate.AddDays(7);
+        }
+
+        public void GenerateCalendar()
+        {
+            CalendarDays.Clear();
+
+            if (ViewMode == CalendarViewMode.Monthly)
             {
-                CurrentTodos.Add(todo);
+                DateTime firstDayOfMonth = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+                int diff = (int)firstDayOfMonth.DayOfWeek;
+                DateTime startDate = firstDayOfMonth.AddDays(-diff);
+
+                for (int i = 0; i < 42; i++)
+                {
+                    DateTime loopDate = startDate.AddDays(i);
+                    var dayObj = new CalendarDay
+                    {
+                        Date = loopDate,
+                        IsCurrentMonth = loopDate.Month == CurrentDate.Month
+                    };
+                    LoadTodosForDay(dayObj);
+                    CalendarDays.Add(dayObj);
+                }
+            }
+            else
+            {
+                int diff = (int)CurrentDate.DayOfWeek;
+                DateTime startDate = CurrentDate.AddDays(-diff);
+
+                for (int i = 0; i < 7; i++)
+                {
+                    DateTime loopDate = startDate.AddDays(i);
+                    var dayObj = new CalendarDay
+                    {
+                        Date = loopDate,
+                        IsCurrentMonth = true
+                    };
+                    LoadTodosForDay(dayObj);
+                    CalendarDays.Add(dayObj);
+                }
             }
         }
 
-        // --- INotifyPropertyChanged 구현부 ---
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void LoadTodosForDay(CalendarDay dayObj)
+        {
+            var todosForDay = _todoManager.GetTodosForDate(dayObj.Date);
+            foreach (var todo in todosForDay)
+            {
+                dayObj.Todos.Add(todo);
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

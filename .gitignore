@@ -1,1 +1,13 @@
 bin/
+obj/
+publish/
+packages/
+.tools/
+*.nupkg
+.vs/
+.vscode/
+*.user
+appsettings.Development.json
+Thumbs.db
+.DS_Store
+*.log
