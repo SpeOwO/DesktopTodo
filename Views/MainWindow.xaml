@@ -24,147 +24,164 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
 
-    <Grid Margin="10,10,10,10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <Border Grid.Row="0" Background="#33FFFFFF" CornerRadius="5" Margin="0,0,0,10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
-                    <Button Content="◀" Width="30" Height="30" Click="Prev_Click" Background="#44000000" Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"/>
-                    <TextBlock Text="{Binding DisplayDateText}" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <Button Content="▶" Width="30" Height="30" Click="Next_Click" Background="#44000000" Foreground="White" BorderThickness="0" Margin="10,0,0,0" Cursor="Hand"/>
-                </StackPanel>
-
-                <Button Grid.Column="2" Click="ToggleView_Click" Background="#4CAF50" BorderThickness="0" Margin="0,0,10,0" Padding="8,4" VerticalAlignment="Center" Cursor="Hand">
-                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
-                    <ContentControl Content="{Binding ViewMode}">
-                        <ContentControl.Style>
-                            <Style TargetType="ContentControl">
-                                <Setter Property="ContentTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate>
-                                            <UniformGrid Rows="3" Columns="3" Width="22" Height="22">
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                            </UniformGrid>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewMode}" Value="Weekly">
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <UniformGrid Rows="1" Columns="3" Width="22" Height="10" VerticalAlignment="Center">
-                                                        <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                        <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                        <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    </UniformGrid>
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                </Button>
-
-                <ToggleButton x:Name="SettingsBtn" Grid.Column="3" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
-                    <TextBlock Text="⚙" Foreground="White" FontSize="20" VerticalAlignment="Center"/>
-                </ToggleButton>
-                <Popup IsOpen="{Binding IsChecked, ElementName=SettingsBtn}" StaysOpen="False" PlacementTarget="{Binding ElementName=SettingsBtn}" Placement="Bottom" HorizontalOffset="-100">
-                    <Border Background="#2C2C2C" BorderBrush="#555555" BorderThickness="1" CornerRadius="5" Padding="15">
-                        <StackPanel>
-                            <TextBlock Text="위젯 설정" Foreground="Gray" FontSize="12" Margin="0,0,0,10"/>
-                            <CheckBox Content="창 크기 조절 허용 (고정 해제)" IsChecked="{Binding IsSizeUnlocked}" Foreground="White" Cursor="Hand"/>
-                        </StackPanel>
-                    </Border>
-                </Popup>
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="1">
+    <Grid>
+        <Grid Margin="10,10,10,10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="50"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
 
-            <Border Grid.Row="0" Grid.Column="0" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="일요일" Foreground="#FF6B6B" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="1" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="월요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="2" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="화요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="3" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="수요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="4" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="목요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="5" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="금요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
-            <Border Grid.Row="0" Grid.Column="6" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,1,1"><TextBlock Text="토요일" Foreground="#4DABF7" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+            <!-- 헤더 -->
+            <Border Grid.Row="0" Background="#33FFFFFF" CornerRadius="5" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <Button Content="◀" Width="30" Height="30" Click="Prev_Click" Background="#44000000" Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"/>
+                        <TextBlock Text="{Binding DisplayDateText}" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Button Content="▶" Width="30" Height="30" Click="Next_Click" Background="#44000000" Foreground="White" BorderThickness="0" Margin="10,0,0,0" Cursor="Hand"/>
+                    </StackPanel>
 
-            <ItemsControl Grid.Row="1" Grid.ColumnSpan="7" ItemsSource="{Binding CalendarDays}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate><UniformGrid Columns="7" /></ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="#22FFFFFF" BorderBrush="#55FFFFFF" BorderThickness="1" Margin="1" Padding="5" 
-                                MouseLeftButtonDown="CalendarDay_MouseLeftButtonDown" Cursor="Hand" ToolTip="더블클릭하여 새 할 일 추가">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Text="{Binding DayNumber}" Foreground="{Binding DayColor}" FontSize="14" FontWeight="Bold" Margin="0,0,0,5" HorizontalAlignment="Left"/>
-                                
-                                <ItemsControl Grid.Row="1" ItemsSource="{Binding Todos}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Background="#44000000" CornerRadius="3" Margin="0,0,0,3" Padding="3"
-                                                    MouseLeftButtonDown="TodoItem_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 상세 보기/수정">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Rectangle Grid.Column="0" Width="3" Height="12" Fill="{Binding ColorTag}" RadiusX="1" RadiusY="1" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="White" FontSize="11" TextTrimming="CharacterEllipsis"/>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
+                    <Button Grid.Column="2" Click="ToggleView_Click" Background="#4CAF50" BorderThickness="0" Margin="0,0,10,0" Padding="8,4" VerticalAlignment="Center" ToolTip="주간/월간 보기 전환" Cursor="Hand">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                        <ContentControl Content="{Binding ViewMode}">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <UniformGrid Rows="3" Columns="3" Width="22" Height="22">
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                </UniformGrid>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewMode}" Value="Weekly">
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <UniformGrid Rows="1" Columns="3" Width="22" Height="10" VerticalAlignment="Center">
+                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                        </UniformGrid>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+                    </Button>
+
+                    <ToggleButton x:Name="SettingsBtn" Grid.Column="3" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
+                        <TextBlock Text="⚙" Foreground="White" FontSize="20" VerticalAlignment="Center"/>
+                    </ToggleButton>
+                    <Popup IsOpen="{Binding IsChecked, ElementName=SettingsBtn}" StaysOpen="False" PlacementTarget="{Binding ElementName=SettingsBtn}" Placement="Bottom" HorizontalOffset="-100">
+                        <Border Background="#2C2C2C" BorderBrush="#555555" BorderThickness="1" CornerRadius="5" Padding="15">
+                            <StackPanel>
+                                <TextBlock Text="위젯 설정" Foreground="Gray" FontSize="12" Margin="0,0,0,10"/>
+                                <CheckBox Content="창 크기 조절 허용 (고정 해제)" IsChecked="{Binding IsSizeUnlocked}" Foreground="White" Cursor="Hand"/>
+                            </StackPanel>
                         </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    </Popup>
+                </Grid>
+            </Border>
+
+            <!-- 캘린더 그리드 -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Row="0" Grid.Column="0" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="일요일" Foreground="#FF6B6B" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="1" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="월요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="2" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="화요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="3" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="수요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="4" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="목요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="5" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="금요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+                <Border Grid.Row="0" Grid.Column="6" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,1,1"><TextBlock Text="토요일" Foreground="#4DABF7" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
+
+                <ItemsControl Grid.Row="1" Grid.ColumnSpan="7" ItemsSource="{Binding CalendarDays}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><UniformGrid Columns="7" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#22FFFFFF" BorderBrush="#55FFFFFF" BorderThickness="1" Margin="1" Padding="5" 
+                                    MouseLeftButtonDown="CalendarDay_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 새 할 일 추가">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Grid.Row="0" Text="{Binding DayNumber}" Foreground="{Binding DayColor}" FontSize="14" FontWeight="Bold" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                                    
+                                    <ItemsControl Grid.Row="1" ItemsSource="{Binding Todos}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#44000000" CornerRadius="3" Margin="0,0,0,3" Padding="3"
+                                                        MouseLeftButtonDown="TodoItem_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 상세 보기/수정">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Rectangle Grid.Column="0" Width="3" Height="12" Fill="{Binding ColorTag}" RadiusX="1" RadiusY="1" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        
+                                                        <!-- [업데이트] 상태가 Completed일 때 글씨 회색 및 취소선 효과 적용 -->
+                                                        <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="White" FontSize="11" TextTrimming="CharacterEllipsis">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding State}" Value="Completed">
+                                                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                                            <Setter Property="Foreground" Value="#888888"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
         </Grid>
 
-        <!-- 크기 조절 손잡이들 -->
+        <!-- 크기 조절 손잡이 -->
         <Thumb Width="8" HorizontalAlignment="Right" Cursor="SizeWE" DragDelta="ResizeRight_DragDelta" Background="Transparent" Visibility="{Binding IsSizeUnlocked, Converter={StaticResource BoolToVis}}">
             <Thumb.Template><ControlTemplate><Grid Background="Transparent"/></ControlTemplate></Thumb.Template>
         </Thumb>

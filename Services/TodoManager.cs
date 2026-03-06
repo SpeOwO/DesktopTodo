@@ -9,10 +9,8 @@ namespace DesktopTodo.Services
 {
     public class TodoManager
     {
-        // 데이터가 저장될 파일 경로 (내 문서 폴더 활용)
         private readonly string dataFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DesktopTodoData.json");
 
-        // 메모리에서 관리할 데이터 리스트
         public List<SingleTask> Tasks { get; private set; } = new List<SingleTask>();
         public List<ProjectTask> Projects { get; private set; } = new List<ProjectTask>();
         public List<RoutineDefinition> Routines { get; private set; } = new List<RoutineDefinition>();
@@ -23,17 +21,9 @@ namespace DesktopTodo.Services
             LoadData();
         }
 
-        // 1. 데이터 저장 및 불러오기 (JSON)
         public void SaveData()
         {
-            var appData = new
-            {
-                Tasks,
-                Projects,
-                Routines,
-                Settings
-            };
-
+            var appData = new { Tasks, Projects, Routines, Settings };
             string jsonString = JsonSerializer.Serialize(appData, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(dataFilePath, jsonString);
         }
@@ -45,7 +35,6 @@ namespace DesktopTodo.Services
                 string jsonString = File.ReadAllText(dataFilePath);
                 var element = JsonSerializer.Deserialize<JsonElement>(jsonString);
                 
-                // 경고 방지 및 안전한 데이터 파싱을 위해 TryGetProperty 사용
                 if (element.TryGetProperty("Tasks", out var tasksProp))
                     Tasks = JsonSerializer.Deserialize<List<SingleTask>>(tasksProp.GetRawText()) ?? new List<SingleTask>();
                     
@@ -60,27 +49,29 @@ namespace DesktopTodo.Services
             }
         }
 
-        // 2. 특정 날짜의 업무 가져오기
         public List<TodoItemBase> GetTodosForDate(DateTime date)
         {
             var targetDate = date.Date;
             var result = new List<TodoItemBase>();
 
-            // A. 루틴 확인 및 자동 생성
             GenerateRoutineTasksForDate(targetDate);
 
-            // B. 해당 날짜의 단발성 업무 추가
-            result.AddRange(Tasks.Where(t => t.TargetDate.Date == targetDate));
+            // [수정됨] 종료일(EndDate)이 설정된 경우 시작일~종료일 사이에 모두 표시되도록 변경
+            result.AddRange(Tasks.Where(t => 
+                (t.EndDate.HasValue 
+                    ? (t.TargetDate.Date <= targetDate && t.EndDate.Value.Date >= targetDate)
+                    : t.TargetDate.Date == targetDate)
+            ));
 
-            // C. 이월(Rollover)된 과거 업무 가져오기
+            // 이월(Rollover) 처리: 종료일이 지났는데 완료되지 않은 항목
             var rolloverTasks = Tasks.Where(t => 
-                t.TargetDate.Date < targetDate && 
                 t.IsRolloverEnabled && 
-                (t.State != TodoState.Completed)).ToList();
+                t.State != TodoState.Completed &&
+                (t.EndDate.HasValue ? t.EndDate.Value.Date < targetDate : t.TargetDate.Date < targetDate)
+            ).ToList();
             
             result.AddRange(rolloverTasks);
 
-            // D. 해당 날짜가 포함된 공유형 업무(Project) 추가
             var activeProjects = Projects.Where(p => 
                 p.StartDate.Date <= targetDate && 
                 p.EndDate.Date >= targetDate).ToList();
@@ -92,7 +83,7 @@ namespace DesktopTodo.Services
                     project.CompletedDate.HasValue && 
                     targetDate > project.CompletedDate.Value.Date)
                 {
-                    continue; // 숨김 처리
+                    continue; 
                 }
                 result.Add(project);
             }
@@ -100,7 +91,6 @@ namespace DesktopTodo.Services
             return result;
         }
 
-        // 3. 루틴 생성기
         private void GenerateRoutineTasksForDate(DateTime date)
         {
             foreach (var routine in Routines)
