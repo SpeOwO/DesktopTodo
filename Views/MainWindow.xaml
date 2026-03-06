@@ -37,6 +37,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/> <!-- 새 업무 추가 버튼 자리 -->
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
@@ -47,7 +48,12 @@
                         <Button Content="▶" Width="30" Height="30" Click="Next_Click" Background="#44000000" Foreground="White" BorderThickness="0" Margin="10,0,0,0" Cursor="Hand"/>
                     </StackPanel>
 
-                    <Button Grid.Column="2" Click="ToggleView_Click" Background="#4CAF50" BorderThickness="0" Margin="0,0,10,0" Padding="8,4" VerticalAlignment="Center" ToolTip="주간/월간 보기 전환" Cursor="Hand">
+                    <!-- [NEW] 새 업무 추가 버튼 -->
+                    <Button Grid.Column="2" Content="＋ 새 업무 추가" Click="AddNewTask_Click" Background="#4DABF7" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="0,0,15,0" Padding="15,6" VerticalAlignment="Center" Cursor="Hand">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Grid.Column="3" Click="ToggleView_Click" Background="#4CAF50" BorderThickness="0" Margin="0,0,10,0" Padding="8,4" VerticalAlignment="Center" ToolTip="주간/월간 보기 전환" Cursor="Hand">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
                         <ContentControl Content="{Binding ViewMode}">
                             <ContentControl.Style>
@@ -56,15 +62,7 @@
                                         <Setter.Value>
                                             <DataTemplate>
                                                 <UniformGrid Rows="3" Columns="3" Width="22" Height="22">
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                    <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
                                                 </UniformGrid>
                                             </DataTemplate>
                                         </Setter.Value>
@@ -75,9 +73,7 @@
                                                 <Setter.Value>
                                                     <DataTemplate>
                                                         <UniformGrid Rows="1" Columns="3" Width="22" Height="10" VerticalAlignment="Center">
-                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
-                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
+                                                            <Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/><Border BorderBrush="White" BorderThickness="1.5" Margin="1" CornerRadius="1"/>
                                                         </UniformGrid>
                                                     </DataTemplate>
                                                 </Setter.Value>
@@ -89,7 +85,7 @@
                         </ContentControl>
                     </Button>
 
-                    <ToggleButton x:Name="SettingsBtn" Grid.Column="3" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
+                    <ToggleButton x:Name="SettingsBtn" Grid.Column="4" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
                         <TextBlock Text="⚙" Foreground="White" FontSize="20" VerticalAlignment="Center"/>
                     </ToggleButton>
                     <Popup IsOpen="{Binding IsChecked, ElementName=SettingsBtn}" StaysOpen="False" PlacementTarget="{Binding ElementName=SettingsBtn}" Placement="Bottom" HorizontalOffset="-100">
@@ -103,21 +99,10 @@
                 </Grid>
             </Border>
 
-            <!-- 캘린더 그리드 -->
+            <!-- 캘린더 그리드 (기존과 동일하므로 코드 절약 위해 일부 축약) -->
             <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition Height="30"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
 
                 <Border Grid.Row="0" Grid.Column="0" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="일요일" Foreground="#FF6B6B" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
                 <Border Grid.Row="0" Grid.Column="1" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,0,1"><TextBlock Text="월요일" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
@@ -128,34 +113,20 @@
                 <Border Grid.Row="0" Grid.Column="6" Background="#44000000" BorderBrush="#55FFFFFF" BorderThickness="1,1,1,1"><TextBlock Text="토요일" Foreground="#4DABF7" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/></Border>
 
                 <ItemsControl Grid.Row="1" Grid.ColumnSpan="7" ItemsSource="{Binding CalendarDays}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate><UniformGrid Columns="7" /></ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="7" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="#22FFFFFF" BorderBrush="#55FFFFFF" BorderThickness="1" Margin="1" Padding="5" 
-                                    MouseLeftButtonDown="CalendarDay_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 새 할 일 추가">
+                            <Border Background="#22FFFFFF" BorderBrush="#55FFFFFF" BorderThickness="1" Margin="1" Padding="5" MouseLeftButtonDown="CalendarDay_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 해당 날짜에 할 일 추가">
                                 <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    
+                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Text="{Binding DayNumber}" Foreground="{Binding DayColor}" FontSize="14" FontWeight="Bold" Margin="0,0,0,5" HorizontalAlignment="Left"/>
-                                    
                                     <ItemsControl Grid.Row="1" ItemsSource="{Binding Todos}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Background="#44000000" CornerRadius="3" Margin="0,0,0,3" Padding="3"
-                                                        MouseLeftButtonDown="TodoItem_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 상세 보기/수정">
+                                                <Border Background="#44000000" CornerRadius="3" Margin="0,0,0,3" Padding="3" MouseLeftButtonDown="TodoItem_MouseLeftButtonDown" Cursor="Hand" ToolTip="클릭하여 상세 보기/수정">
                                                     <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                                         <Rectangle Grid.Column="0" Width="3" Height="12" Fill="{Binding ColorTag}" RadiusX="1" RadiusY="1" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        
-                                                        <!-- [업데이트] 상태가 Completed일 때 글씨 회색 및 취소선 효과 적용 -->
                                                         <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="White" FontSize="11" TextTrimming="CharacterEllipsis">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
@@ -181,7 +152,7 @@
             </Grid>
         </Grid>
 
-        <!-- 크기 조절 손잡이 -->
+        <!-- 크기 조절 손잡이들 -->
         <Thumb Width="8" HorizontalAlignment="Right" Cursor="SizeWE" DragDelta="ResizeRight_DragDelta" Background="Transparent" Visibility="{Binding IsSizeUnlocked, Converter={StaticResource BoolToVis}}">
             <Thumb.Template><ControlTemplate><Grid Background="Transparent"/></ControlTemplate></Thumb.Template>
         </Thumb>

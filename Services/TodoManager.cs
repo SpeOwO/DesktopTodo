@@ -54,16 +54,66 @@ namespace DesktopTodo.Services
             var targetDate = date.Date;
             var result = new List<TodoItemBase>();
 
-            GenerateRoutineTasksForDate(targetDate);
-
-            // [수정됨] 종료일(EndDate)이 설정된 경우 시작일~종료일 사이에 모두 표시되도록 변경
-            result.AddRange(Tasks.Where(t => 
+            // 1. 이미 구체화된(저장된) 일반 업무들 불러오기
+            var concreteTasks = Tasks.Where(t => 
                 (t.EndDate.HasValue 
                     ? (t.TargetDate.Date <= targetDate && t.EndDate.Value.Date >= targetDate)
                     : t.TargetDate.Date == targetDate)
-            ));
+            ).ToList();
+            
+            result.AddRange(concreteTasks);
 
-            // 이월(Rollover) 처리: 종료일이 지났는데 완료되지 않은 항목
+            // 2. [핵심] 루틴 규칙을 읽어서 메모리상에 '가상 업무'로 띄워주기 (DB 저장 안 함!)
+            foreach (var routine in Routines)
+            {
+                // 가상 업무의 고유 ID (루틴ID + 날짜 조합)
+                string transientId = $"{routine.Id}_{targetDate:yyyyMMdd}";
+                
+                // 만약 사용자가 이 날짜의 루틴을 이미 '완료'하거나 메모를 적어서 구체화시켰다면, 가상으로 또 띄우지 않음
+                if (concreteTasks.Any(t => t.Id == transientId))
+                    continue;
+
+                bool shouldGenerate = false;
+                switch (routine.Type)
+                {
+                    case RoutineType.Daily:
+                        shouldGenerate = true;
+                        break;
+                    case RoutineType.Weekly:
+                        shouldGenerate = routine.TargetDaysOfWeek.Contains(targetDate.DayOfWeek);
+                        break;
+                    case RoutineType.Monthly:
+                        if (routine.IsLastDayOfMonth)
+                        {
+                            int daysInMonth = DateTime.DaysInMonth(targetDate.Year, targetDate.Month);
+                            shouldGenerate = (targetDate.Day == daysInMonth);
+                        }
+                        else if (routine.MonthlyTargetDate.HasValue)
+                        {
+                            shouldGenerate = (targetDate.Day == routine.MonthlyTargetDate.Value);
+                        }
+                        break;
+                }
+
+                if (shouldGenerate)
+                {
+                    // 화면에 보여주기 위한 가짜(Virtual) 객체 생성
+                    result.Add(new SingleTask
+                    {
+                        Id = transientId, // 이 특별한 ID로 나중에 가상 객체임을 식별함
+                        Title = routine.Title,
+                        ColorTag = routine.ColorTag,
+                        TargetDate = targetDate,
+                        EndDate = targetDate,
+                        State = TodoState.NotStarted,
+                        IsRolloverEnabled = routine.IsRolloverEnabled,
+                        ParentRoutineId = routine.Id,
+                        Scope = TaskScope.Instance
+                    });
+                }
+            }
+
+            // 3. 이월(Rollover) 처리
             var rolloverTasks = Tasks.Where(t => 
                 t.IsRolloverEnabled && 
                 t.State != TodoState.Completed &&
@@ -72,6 +122,7 @@ namespace DesktopTodo.Services
             
             result.AddRange(rolloverTasks);
 
+            // 4. 프로젝트 처리
             var activeProjects = Projects.Where(p => 
                 p.StartDate.Date <= targetDate && 
                 p.EndDate.Date >= targetDate).ToList();
@@ -89,52 +140,6 @@ namespace DesktopTodo.Services
             }
 
             return result;
-        }
-
-        private void GenerateRoutineTasksForDate(DateTime date)
-        {
-            foreach (var routine in Routines)
-            {
-                bool alreadyExists = Tasks.Any(t => t.ParentRoutineId == routine.Id && t.TargetDate.Date == date.Date);
-                if (alreadyExists) continue;
-
-                bool shouldGenerate = false;
-
-                switch (routine.Type)
-                {
-                    case RoutineType.Daily:
-                        shouldGenerate = true;
-                        break;
-                    case RoutineType.Weekly:
-                        shouldGenerate = routine.TargetDaysOfWeek.Contains(date.DayOfWeek);
-                        break;
-                    case RoutineType.Monthly:
-                        if (routine.IsLastDayOfMonth)
-                        {
-                            int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
-                            shouldGenerate = (date.Day == daysInMonth);
-                        }
-                        else if (routine.MonthlyTargetDate.HasValue)
-                        {
-                            shouldGenerate = (date.Day == routine.MonthlyTargetDate.Value);
-                        }
-                        break;
-                }
-
-                if (shouldGenerate)
-                {
-                    var newTask = new SingleTask
-                    {
-                        Title = routine.Title,
-                        ColorTag = routine.ColorTag,
-                        IsRolloverEnabled = routine.IsRolloverEnabled,
-                        TargetDate = date.Date,
-                        ParentRoutineId = routine.Id,
-                        State = TodoState.NotStarted
-                    };
-                    Tasks.Add(newTask);
-                }
-            }
         }
     }
 }
